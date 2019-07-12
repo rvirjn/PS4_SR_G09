@@ -24,6 +24,7 @@ def insertStudentRec(StudentHashRecords, studentId, CGPA):
     function and only the information in every individual row needs to be
     passed to the function
 
+    :param StudentHashRecords:
     :param studentId:
     :param CGPA:
     :return:
@@ -76,10 +77,8 @@ def hallOfFame(StudentHashRecords, CGPA):
             temp[key] = value
     for key in temp.keys():
         value = StudentHashRecords.get(key)
-        Qualified_students = Qualified_students + ((student_format.format(key=key,
-                                                         value=value))).strip() + '\n'
-    output = output_format.format(CGPA=CGPA, count=count,
-                           Qualified_students=Qualified_students)
+        Qualified_students = Qualified_students + ((student_format.format(key=key, value=value))).strip() + '\n'
+    output = output_format.format(CGPA=CGPA, count=count, Qualified_students=Qualified_students)
     print(output)
     temp.clear()
     return output
@@ -104,7 +103,7 @@ def newCourseList(StudentHashRecords, CGPAFrom, CPGATo):
     2008CSE1223 / 3.5
     2008CSE1224 / 3.9
     ------------------------------------
-
+    :param StudentHashRecords
     :param CGPAFrom:
     :param CPGATo:
     :return: Output
@@ -126,11 +125,9 @@ def newCourseList(StudentHashRecords, CGPAFrom, CPGATo):
             temp[key] = value
     for key in temp.keys():
         value = StudentHashRecords.get(key)
-        Qualified_students = Qualified_students + ((student_format.format(key=key,
-                                                         value=value))).strip() + '\n'
+        Qualified_students = Qualified_students + ((student_format.format(key=key, value=value))).strip() + '\n'
 
-    output = output_format.format(CPGATo=CPGATo, CGPAFrom=CGPAFrom,
-                                   count=count, Qualified_students=Qualified_students)
+    output = output_format.format(CPGATo=CPGATo, CGPAFrom=CGPAFrom, count=count, Qualified_students=Qualified_students)
     print(output)
     temp.clear()
     return output
@@ -166,7 +163,7 @@ def depAvg(StudentHashRecords):
     student_format = """{dept}: max: {dept_max}, avg: {dept_avg}"""
     students = ''
     for key in StudentHashRecords.keys():
-        value = float(StudentHashRecords.get(key))
+        value = StudentHashRecords.get(key)
         dept = re.split('(\d+)', key)[2]
         if dept == 'CSE':
             CSE_numberOfRec = CSE_numberOfRec + 1
@@ -222,6 +219,91 @@ def destroyHash(StudentHashRecords):
     return StudentHashRecords
 
 
+def validate_inputPS4_txt(line):
+    if '/' in line:
+        arr = line.split('/')
+        if len(arr) == 2:
+            studentId = arr[0].strip()
+            y_d_r = re.split('(\d+)', studentId)
+            if len(y_d_r) != 5:
+                print('Student ID is not proper hence skiping that rc %s\n' % studentId)
+                raise
+            dept = y_d_r[2]
+            if dept not in ['CSE', 'ECE', 'ARC', 'MEC']:
+                print('Student ID had not proper dept %s\n' % studentId)
+                raise
+            cgpa = arr[1].strip()
+            try:
+                cgpa = float(cgpa)
+            except Exception:
+                print("Enter proper cgpa value in inputPS4.txt %s\n" % line)
+                raise
+            return studentId, cgpa
+        else:
+            print('Record is not in proper format %s \n' % line)
+            raise
+    else:
+        print('/ in missing in line %s' % line)
+        raise
+
+
+def validate_hallOfFame_txt():
+    CGPA = None
+    with open('promptsPS4.txt') as f:
+        lines = f.readlines()
+        for line in lines:
+            if 'hallOfFame' in line:
+                arrs = line.split('hallOfFame:')
+                if not arrs:
+                    print('Enter proper format for hallOfFame %s \n' % line)
+                    raise
+                if len(arrs) != 2:
+                    print('Enter proper format for hallOfFame %s \n' % line)
+                    raise
+                CGPA = arrs[1].strip()
+                try:
+                    CGPA = float(CGPA)
+                except Exception:
+                    print("Enter proper value in promptsPS4.txt %s \n" % line)
+                    raise
+
+    if CGPA is None and not isinstance(CGPA, float):
+        print("Enter proper CGPA value \n")
+        raise
+    return CGPA
+
+
+def validate_courseOffer_txt():
+    CGPAFrom, CPGATo = None, None
+    with open('promptsPS4.txt') as f:
+        lines = f.readlines()
+        for line in lines:
+            if 'courseOffer' in line:
+                arrss = line.split('courseOffer:')
+                if len(arrss) > 1:
+                    rng = arrss[1].strip()
+                else:
+                    print('Enter proper format for courseOffer %s \n' % line)
+                    raise
+                ars = rng.split(':')
+                if len(ars) != 2:
+                    print('Enter proper format for courseOffer range %s \n' % line)
+                    raise
+                CGPAFrom = ars[0].strip()
+                CPGATo = ars[1].strip()
+                try:
+                    CGPAFrom = float(CGPAFrom)
+                    CPGATo = float(CPGATo)
+                except Exception:
+                    print("Enter proper value for courseOffer %s \n" % line)
+                    raise
+
+    if CGPAFrom is None and CPGATo is None and not isinstance(CGPAFrom, float) and not isinstance(CPGATo, float):
+        print("Enter proper CGPAFrom, CGPATO value \n")
+        raise
+    return CGPAFrom, CPGATo
+
+
 def writeTofile(output):
     f = open("outputPS4.txt", "a")
     f.write(output)
@@ -235,31 +317,19 @@ if __name__ == "__main__":
     open("outputPS4.txt", "w").close()
 
     # input for function insertStudentRec()
-    with open('inputPS4.txt') as input:
-        lines = input.readlines()
+    with open('inputPS4.txt') as f:
+        lines = f.readlines()
         for line in lines:
-            studentId = line.split('/')[0].strip()
-            CGPA = line.split('/')[1].strip()
-            insertStudentRec(StudentHashRecords, studentId, CGPA)
+            studentId, cgpa = validate_inputPS4_txt(line)
+            insertStudentRec(StudentHashRecords, studentId, cgpa)
 
     # input for function hallOfFame()
-    with open('promptsPS4.txt') as input:
-        lines = input.readlines()
-        for line in lines:
-            if 'hallOfFame:' in line:
-                CGPA = line.split('hallOfFame:')[1].strip()
+    CGPA = validate_hallOfFame_txt()
     hallOfFame_output = hallOfFame(StudentHashRecords, CGPA)
-
     writeTofile(hallOfFame_output)
 
     # input for function newCourseList()
-    with open('promptsPS4.txt') as input:
-        lines = input.readlines()
-        for line in lines:
-            if 'courseOffer:' in line:
-                rng  = line.split('courseOffer:')[1].strip()
-                CGPAFrom = rng.split(':')[0].strip()
-                CPGATo = rng.split(':')[1].strip()
+    CGPAFrom, CPGATo = validate_courseOffer_txt()
     newCourseList_output = newCourseList(StudentHashRecords, CGPAFrom, CPGATo)
     writeTofile(newCourseList_output)
 
