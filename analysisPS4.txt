@@ -1,2 +1,30 @@
 Hour:Min:Sec.MicroSec
 0:00:00.001551
+
+insertStudentRec:
+   c1 + O(n)
+  
+hallOfFame:
+  c1 + B1 + O(n) + O(eligible students)
+  
+newCourseList:
+  c1 + O(n) + B1 + O(eligible students)
+  
+depAvg:
+  c1 + O(n) + B1 + b1 + B2 + b2 + B3 + b3 + B4 + b4 
+
+
+====util functions====
+validate_inputPS4_txt:
+ B1 + b1 + b2 + b3 
+
+validate_hallOfFame_txt:
+  O(n) + B1 + b1 + b2
+
+validate_courseOffer_txt:
+  O(n) + B1 + b1 + b2 + b3
+
+writeTofile:
+
+__main__:
+  O(n)
