@@ -2,8 +2,8 @@
 Input: 4.5
 Total eligible students: 2
 Qualified students:
-2008CSE1225 / 4.5
 2008CSE1226 / 4.8
+2008CSE1225 / 4.5
 -------------------------------------------------
 ---------new course candidates-----------------------
 Input: 3.5 to 4.0

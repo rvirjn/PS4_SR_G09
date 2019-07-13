@@ -2,7 +2,7 @@
 # ASSIGNMENT1_BLR_B2_G09
 
 import re
-
+import datetime
 
 def initializeHash():
     """
@@ -304,13 +304,14 @@ def validate_courseOffer_txt():
     return CGPAFrom, CPGATo
 
 
-def writeTofile(output):
-    f = open("outputPS4.txt", "a")
+def writeTofile(output, file="outputPS4.txt"):
+    f = open(file, "a")
     f.write(output)
     f.close()
 
 
 if __name__ == "__main__":
+    start_time = datetime.datetime.now()
     StudentHashRecords = initializeHash()
 
     # create outputPS4.txt
@@ -341,3 +342,10 @@ if __name__ == "__main__":
 
     # clean-up code
     StudentHashRecords = destroyHash(StudentHashRecords)
+
+    # update time in Analysis
+    end_time = datetime.datetime.now()
+    open("analysisPS4.txt", "w").close()
+    writeTofile('Hour:Min:Sec.MicroSec\n', "analysisPS4.txt")
+    writeTofile(str(end_time-start_time), "analysisPS4.txt")
+
